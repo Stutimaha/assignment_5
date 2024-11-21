@@ -1,0 +1,40 @@
+name: Test Model
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tensorflow
+
+    - name: Run model script
+      run: |
+        python model.py
+
+    - name: Check parameters and accuracy
+      run: |
+        python -c 
+        "
+        import tensorflow as tf
+        from model import model
+        assert model.count_params() < 25000, 'Model has more than 25000 parameters'
+        (x_train, y_train), _ = tf.keras.datasets.mnist.load_data()
+        x_train = x_train.reshape(-1, 28, 28, 1).astype('float32') / 255
+        y_train = tf.keras.utils.to_categorical(y_train, 10)
+        train_loss, train_acc = model.evaluate(x_train, y_train, verbose=0)
+        assert train_acc > 0.95, 'Model accuracy is less than 95%'
+        print('Model passed all tests')
+        "
