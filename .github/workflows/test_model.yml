@@ -26,9 +26,7 @@ jobs:
 
     - name: Check parameters and accuracy
       run: |
-        python -c 
-        "
-        import tensorflow as tf
+        python -c "import tensorflow as tf
         from model import model
         assert model.count_params() < 25000, 'Model has more than 25000 parameters'
         (x_train, y_train), _ = tf.keras.datasets.mnist.load_data()
@@ -36,5 +34,4 @@ jobs:
         y_train = tf.keras.utils.to_categorical(y_train, 10)
         train_loss, train_acc = model.evaluate(x_train, y_train, verbose=0)
         assert train_acc > 0.95, 'Model accuracy is less than 95%'
-        print('Model passed all tests')
-        "
+        print('Model passed all tests')"
